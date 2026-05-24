@@ -1,0 +1,143 @@
+
+/*
+|--------------------------------------------------------------------------
+| 1. PRODUCT MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module ProductManagement/ProductCategory [category_name:string-255,description:longtext,category_image:image-255,display_order:integer,parent_category_id:integer] --vue
+
+php artisan make:module ProductManagement/Product [name:string-255,description:longtext,image:string,regular_price:bigint,sales_price:bigint,category_id:integer,sku:string,is_featured:boolean,quantity:bigint] --vue
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| 2. ORDER MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module OrderManagement/Order [order_number:string-50-unique,customer_name:string-255,customer_phone:string-20,customer_email:string-255,delivery_address:longtext,delivery_area_id:integer,delivery_district:string-100,delivery_thana:string-100,delivery_village:string-100,delivery_date:date,delivered_date:date,subtotal:decimal-12.2,shipping_charge:decimal-10.2,discount_amount:decimal-10.2,promo_code_used:string-100,total_amount:decimal-12.2,payment_method:string-50,payment_status:enum-pending.completed.failed.refunded,order_status:enum-pending.confirmed.processing.shipped.delivered.cancelled.returned,special_notes:longtext,admin_notes:longtext,ip_address:string-45,source:enum-website.mobile.whatsapp.phone] --vue
+
+
+php artisan make:table OrderManagement/Order/OrderItem [order_id:bigint,product_id:bigint,product_name:string-255,quantity:integer,unit_price:decimal-10.2,total_price:decimal-12.2,discount_per_item:decimal-10.2] --model
+
+
+/*
+|--------------------------------------------------------------------------
+| 4. CUSTOMER MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module CustomerManagement/Customer [user_id:bigint,phone_number:string-20,address:longtext,district:string-100,thana:string-100,village:string-100,total_orders:integer,total_spent:decimal-12.2,lifetime_discount:decimal-10.2,loyalty_points:integer,is_verified:boolean,last_order_date:date] --vue
+
+
+
+/*
+|--------------------------------------------------------------------------
+| 7. REVIEW MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module ReviewManagement/Review [order_id:bigint,product_id:bigint,customer_id:bigint,customer_name:string-255,customer_location:string-255,rating:integer,title:string-255,review_text:longtext,verified_purchase:boolean,is_published:boolean,is_featured:boolean,helpful_count:integer,unhelpful_count:integer,admin_response:longtext,admin_response_date:datetime] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 8. FAQ MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module FAQManagement/FAQ [product_id:bigint,question:string-500,answer:longtext,category:string-100,display_order:integer,is_active:boolean-yes.no,view_count:integer,helpful_count:integer] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 9. PROMO CODE MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module PromoCodeManagement/PromoCode [code:string-50-unique,description:string-255,discount_type:enum-percentage.fixed,discount_value:decimal-10.2,minimum_order_amount:decimal-10.2,maximum_discount_amount:decimal-10.2,applicable_categories:longtext,max_usage:integer,current_usage:integer,max_usage_per_customer:integer,valid_from:datetime,valid_until:datetime,is_active:boolean-yes.no] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 10. DELIVERY AREA MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module DeliveryManagement/DeliveryArea [area_name:string-100-unique,division:string-100,district:string-100,thana:string-100,delivery_days:integer,delivery_charge:decimal-10.2,is_available:boolean-yes.no,cod_available:boolean-yes.no] --vue
+
+
+
+/*
+|--------------------------------------------------------------------------
+| CMS CONTENT MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| 12. PAGE SECTIONS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+
+php artisan delete:module CMSManagement/PageSection [page_name:string-100,section_name:string-100,title:string-255,description:longtext,icon:string-100,display_order:integer,is_visible:boolean-yes.no] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 13. HERO SECTION MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module CMSManagement/HeroSection [heading:string-255,subheading:string-255,description:longtext,button_text:string-100,button_link:string-255,background_image:image-255,image_alt_text:string-255,text_color:string-50,background_color:string-50,is_active:boolean-yes.no,display_order:integer] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 14. BENEFIT CARDS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module CMSManagement/BenefitCard [title:string-255,description:longtext,icon:string-100,icon_image:image-255,display_order:integer,is_active:boolean-yes.no] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 15. HOW IT WORKS STEPS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module CMSManagement/HowItWorksStep [step_number:integer,title:string-255,description:longtext,icon:string-100,icon_image:image-255,display_order:integer,is_active:boolean-yes.no] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 16. TESTIMONIALS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module CMSManagement/Testimonial [customer_name:string-255,customer_image:image-255,customer_location:string-255,testimonial_text:longtext,rating:integer,from_order_id:bigint,is_featured:boolean,is_published:boolean,display_order:integer] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 17. BANNERS/SLIDERS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan make:module CMSManagement/Banner [title:string-255,description:longtext,banner_image:image-255,banner_image_mobile:image-255,button_text:string-100,button_link:string-255,alt_text:string-255,start_date:datetime,end_date:datetime,is_active:boolean-yes.no,display_order:integer,background_color:string-50] --vue
+
+
+/*
+|--------------------------------------------------------------------------
+| 18. SITE SETTINGS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+php artisan delete:module CMSManagement/SiteSetting [key:string-100-unique,value:longtext,category:string-100,description:string-255,data_type:string-50,is_editable:boolean] --vue
+
+

@@ -1,169 +1,154 @@
 <template>
-  <div class="od-page">
-
-    <!-- Top Bar -->
-    <div class="od-topbar d-print-none">
-      <router-link class="od-back-btn" :to="{ name: `All${setup.route_prefix}` }">
-        <i class="fa fa-arrow-left"></i> সব অর্ডার
-      </router-link>
-      <div class="od-topbar-right">
-        <button class="od-btn-print" @click="printInvoice">
-          <i class="fa fa-print"></i> প্রিন্ট / PDF
-        </button>
-      </div>
+  <div class="od-wrap">
+    <!-- ── Top bar ── -->
+    <div class="od-topbar">
+      <router-link class="od-btn-back" :to="{ name: `All${setup.route_prefix}` }"> <i class="fa fa-arrow-left"></i> সব অর্ডার </router-link>
+      <button class="od-btn-print" @click="printInvoice"><i class="fa fa-print"></i> প্রিন্ট / PDF</button>
     </div>
 
-    <!-- Loading -->
+    <!-- ── Loading ── -->
     <div v-if="!item.id" class="od-loading">
-      <div class="spinner-border text-primary" role="status"></div>
+      <div class="spinner-border" role="status"></div>
       <p>লোড হচ্ছে…</p>
     </div>
 
-    <div v-else>
-
-      <!-- ═══ PRINTABLE INVOICE ═══ -->
-      <div id="od-invoice" class="od-invoice">
-
-        <!-- Invoice Header -->
-        <div class="od-inv-head">
-          <div class="od-inv-brand">
-            <div class="od-inv-logo">🛒</div>
-            <div class="od-inv-brand-name">Order Management</div>
+    <template v-else>
+      <!-- ══════════ INVOICE CARD ══════════ -->
+      <div id="od-invoice" class="od-invoice-card">
+        <!-- ── Top brand bar: Logo+Name | Invoice+OrderNo ── -->
+        <div class="od-brand-bar">
+          <div class="od-bb-brand">
+            <img v-if="siteLogo" :src="siteLogo" class="od-bb-logo" alt="logo" />
+            <span v-else class="od-bb-icon">🛒</span>
+            <span class="od-bb-left">{{ siteName }}</span>
           </div>
-          <div class="od-inv-meta">
-            <div class="od-inv-title">INVOICE</div>
-            <div class="od-inv-meta-row">
-              <span>অর্ডার নং:</span>
-              <strong>#{{ item.order_number }}</strong>
+          <div class="od-bb-right">
+            <div class="od-bb-invoice">Invoice</div>
+            <div class="od-bb-ordernum">#{{ item.order_number || '—' }}</div>
+          </div>
+        </div>
+
+        <!-- ── Horizontal rule ── -->
+        <div class="od-inv-rule"></div>
+
+        <!-- ── Two-column: Shipping Info | Order Meta ── -->
+        <div class="od-info-grid">
+          <!-- LEFT: Shipping / Customer Info -->
+          <div class="od-ship-section">
+            <div class="od-ship-title">Shipping Info :</div>
+            <div class="od-ship-row od-ship-name">Name : {{ item.customer_name || "—" }}</div>
+            <div class="od-ship-row od-ship-name">Phone : {{ item.customer_phone || "—" }}</div>
+            <div v-if="item.customer_email" class="od-ship-row">Email : {{ item.customer_email }}</div>
+            <div class="od-ship-row od-ship-name">Address : {{ item.delivery_address || "—" }}</div>
+            <div v-if="item.delivery_thana" class="od-ship-row">Thana : {{ item.delivery_thana }}</div>
+            <div v-if="item.delivery_district" class="od-ship-row">District : {{ item.delivery_district }}</div>
+            <div v-if="item.special_notes" class="od-ship-row">Note : {{ item.special_notes }}</div>
+          </div>
+
+          <!-- RIGHT: Order Meta -->
+          <div class="od-order-meta">
+           
+            <div class="od-om-row">
+              <span class="od-om-label">Order Date:</span>
+              <span class="od-om-val">{{ fmtDate(item.created_at) }}</span>
             </div>
-            <div class="od-inv-meta-row">
-              <span>তারিখ:</span>
-              <strong>{{ formatDate(item.created_at) }}</strong>
+            <div class="od-om-row">
+              <span class="od-om-label">Order Status:</span>
+              <span :class="orderStatusClass(item.order_status)" class="od-badge">{{ orderStatusLabel(item.order_status) }}</span>
             </div>
-            <div class="od-inv-meta-row">
-              <span>অর্ডার স্ট্যাটাস:</span>
-              <span :class="statusClass(item.order_status)" class="od-badge">
-                {{ statusLabel(item.order_status) }}
-              </span>
+            <div class="od-om-row">
+              <span class="od-om-label">Payment Method:</span>
+              <span class="od-badge od-badge--info">{{ item.payment_method || "COD" }}</span>
             </div>
-            <div class="od-inv-meta-row">
-              <span>পেমেন্ট স্ট্যাটাস:</span>
-              <span :class="paymentClass(item.payment_status)" class="od-badge">
-                {{ item.payment_status || 'pending' }}
-              </span>
+            <div class="od-om-row">
+              <span class="od-om-label">Payment Status:</span>
+              <span :class="paymentStatusClass(item.payment_status)" class="od-badge">{{ item.payment_status || "pending" }}</span>
             </div>
           </div>
         </div>
 
-        <hr class="od-divider" />
+        <!-- ── Horizontal rule ── -->
+        <div class="od-inv-rule"></div>
 
-        <!-- Customer + Delivery Info -->
-        <div class="od-info-row">
-          <div class="od-info-card">
-            <div class="od-info-card-title"><i class="fa fa-user"></i> গ্রাহকের তথ্য</div>
-            <table class="od-info-table">
-              <tr><td>নাম</td><td><strong>{{ item.customer_name || '—' }}</strong></td></tr>
-              <tr><td>মোবাইল</td><td>{{ item.customer_phone || '—' }}</td></tr>
-              <tr v-if="item.customer_email"><td>ইমেইল</td><td>{{ item.customer_email }}</td></tr>
-            </table>
-          </div>
-          <div class="od-info-card">
-            <div class="od-info-card-title"><i class="fa fa-map-marker"></i> ডেলিভারি ঠিকানা</div>
-            <table class="od-info-table">
-              <tr><td>ঠিকানা</td><td><strong>{{ item.delivery_address || '—' }}</strong></td></tr>
-              <tr v-if="item.delivery_thana"><td>থানা</td><td>{{ item.delivery_thana }}</td></tr>
-              <tr v-if="item.delivery_district"><td>জেলা</td><td>{{ item.delivery_district }}</td></tr>
-              <tr v-if="item.delivery_date"><td>ডেলিভারি তারিখ</td><td>{{ item.delivery_date }}</td></tr>
-            </table>
-          </div>
-          <div class="od-info-card" v-if="item.special_notes">
-            <div class="od-info-card-title"><i class="fa fa-sticky-note"></i> গ্রাহকের নোট</div>
-            <p class="od-note-text">{{ item.special_notes }}</p>
-          </div>
-        </div>
-
-        <!-- Order Items Table -->
+        <!-- ── Items table ── -->
         <div class="od-items-section">
-          <div class="od-section-title">🛍 অর্ডারকৃত পণ্য</div>
-          <table class="od-items-table">
+          <div class="od-section-label">🛍 অর্ডারকৃত পণ্য</div>
+          <table class="od-table">
             <thead>
               <tr>
-                <th>#</th>
+                <th style="width: 40px">#</th>
                 <th>পণ্যের নাম</th>
-                <th class="text-center">পরিমাণ</th>
-                <th class="text-right">একক মূল্য</th>
-                <th class="text-right">মোট</th>
+                <th class="tc" style="width: 80px">পরিমাণ</th>
+                <th class="tr" style="width: 110px">একক মূল্য</th>
+                <th class="tr" style="width: 110px">মোট</th>
               </tr>
             </thead>
             <tbody>
-              <template v-if="orderItems.length > 0">
+              <template v-if="orderItems.length">
                 <tr v-for="(row, i) in orderItems" :key="i">
                   <td>{{ i + 1 }}</td>
                   <td>
-                    <div class="od-item-name">{{ row.product_name || row.name || '—' }}</div>
+                    <div class="od-item-name">{{ row.product_name || row.name || "—" }}</div>
                     <div v-if="row.variant" class="od-item-variant">{{ row.variant }}</div>
                   </td>
-                  <td class="text-center">{{ row.quantity }}</td>
-                  <td class="text-right">৳ {{ formatMoney(row.unit_price) }}</td>
-                  <td class="text-right"><strong>৳ {{ formatMoney(row.total_price) }}</strong></td>
+                  <td class="tc">{{ row.quantity }}</td>
+                  <td class="tr">৳ {{ fmtMoney(row.unit_price) }}</td>
+                  <td class="tr">
+                    <strong>৳ {{ fmtMoney(row.total_price) }}</strong>
+                  </td>
                 </tr>
               </template>
               <tr v-else>
-                <td colspan="5" class="text-center text-muted py-3">পণ্যের তথ্য পাওয়া যায়নি</td>
+                <td colspan="5" class="tc od-empty-row">পণ্যের তথ্য পাওয়া যায়নি</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Totals -->
+        <!-- ── Totals ── -->
         <div class="od-totals-wrap">
           <div class="od-totals">
-            <div class="od-total-row">
+            <div class="od-total-line">
               <span>সাবটোটাল</span>
-              <span>৳ {{ formatMoney(item.subtotal) }}</span>
+              <span>৳ {{ fmtMoney(item.subtotal) }}</span>
             </div>
-            <div class="od-total-row" v-if="Number(item.discount_amount) > 0">
-              <span>ছাড় <span v-if="item.promo_code_used">({{ item.promo_code_used }})</span></span>
-              <span class="text-success">− ৳ {{ formatMoney(item.discount_amount) }}</span>
-            </div>
-            <div class="od-total-row">
+            <div v-if="Number(item.shipping_charge) > 0" class="od-total-line">
               <span>ডেলিভারি চার্জ</span>
-              <span>৳ {{ formatMoney(item.shipping_charge) }}</span>
+              <span>৳ {{ fmtMoney(item.shipping_charge) }}</span>
             </div>
-            <div class="od-total-row od-grand-total">
+            <div v-if="Number(item.discount_amount) > 0" class="od-total-line od-discount-line">
+              <span
+                >ছাড় <span v-if="item.promo_code_used">({{ item.promo_code_used }})</span></span
+              >
+              <span>− ৳ {{ fmtMoney(item.discount_amount) }}</span>
+            </div>
+            <div class="od-total-line od-grand-line">
               <span>সর্বমোট</span>
-              <span>৳ {{ formatMoney(item.total_amount) }}</span>
+              <span>৳ {{ fmtMoney(item.total_amount) }}</span>
             </div>
           </div>
         </div>
-
       </div>
-      <!-- ═══ END INVOICE ═══ -->
+      <!-- ══════════ END INVOICE ══════════ -->
 
-
-      <!-- ═══ STATUS UPDATE FORM (non-printable) ═══ -->
-      <form class="od-update-card d-print-none" @submit.prevent="submitUpdate" ref="updateFormRef">
-
-        <!-- Hidden: pass all existing fields so API doesn't wipe them -->
-        <input type="hidden" name="customer_name"    :value="item.customer_name" />
-        <input type="hidden" name="customer_phone"   :value="item.customer_phone" />
-        <input type="hidden" name="customer_email"   :value="item.customer_email" />
+      <!-- ══════════ STATUS UPDATE FORM ══════════ -->
+      <form class="od-update-card" @submit.prevent="submitUpdate" ref="formRef">
+        <!-- pass existing fields so API doesn't wipe them -->
+        <input type="hidden" name="customer_name" :value="item.customer_name" />
+        <input type="hidden" name="customer_phone" :value="item.customer_phone" />
+        <input type="hidden" name="customer_email" :value="item.customer_email" />
         <input type="hidden" name="delivery_address" :value="item.delivery_address" />
-        <input type="hidden" name="subtotal"         :value="item.subtotal" />
-        <input type="hidden" name="shipping_charge"  :value="item.shipping_charge" />
-        <input type="hidden" name="discount_amount"  :value="item.discount_amount" />
-        <input type="hidden" name="total_amount"     :value="item.total_amount" />
-        <input type="hidden" name="special_notes"    :value="item.special_notes" />
+        <input type="hidden" name="subtotal" :value="item.subtotal" />
+        <input type="hidden" name="shipping_charge" :value="item.shipping_charge" />
+        <input type="hidden" name="discount_amount" :value="item.discount_amount" />
+        <input type="hidden" name="total_amount" :value="item.total_amount" />
 
-        <div class="od-update-header">
-          <i class="fa fa-edit"></i> অর্ডার আপডেট করুন
-        </div>
+        <div class="od-update-head"><i class="fa fa-pencil-alt"></i> অর্ডার স্ট্যাটাস আপডেট</div>
 
-        <div class="od-update-grid">
-
-          <div class="od-update-field">
+        <div class="od-update-body">
+          <div class="od-field">
             <label>অর্ডার স্ট্যাটাস</label>
-            <select name="order_status" v-model="editData.order_status" class="form-control">
+            <select name="order_status" v-model="edit.order_status" class="form-control">
               <option value="pending">⏳ Pending</option>
               <option value="confirmed">✅ Confirmed</option>
               <option value="processing">⚙️ Processing</option>
@@ -174,9 +159,9 @@
             </select>
           </div>
 
-          <div class="od-update-field">
+          <div class="od-field">
             <label>পেমেন্ট স্ট্যাটাস</label>
-            <select name="payment_status" v-model="editData.payment_status" class="form-control">
+            <select name="payment_status" v-model="edit.payment_status" class="form-control">
               <option value="pending">⏳ Pending</option>
               <option value="completed">✅ Completed</option>
               <option value="failed">❌ Failed</option>
@@ -184,280 +169,774 @@
             </select>
           </div>
 
-          <div class="od-update-field">
+          <div class="od-field">
             <label>ডেলিভারি তারিখ</label>
-            <input type="date" name="delivery_date" v-model="editData.delivery_date" class="form-control" />
+            <input type="date" name="delivery_date" v-model="edit.delivery_date" class="form-control" />
           </div>
 
-          <div class="od-update-field od-update-field--full">
-            <label>অ্যাডমিন নোট (শুধুমাত্র অ্যাডমিন দেখবেন)</label>
-            <textarea name="admin_notes" v-model="editData.admin_notes" rows="3" class="form-control" placeholder="অর্ডার সম্পর্কে কোনো নোট…"></textarea>
+          <div class="od-field od-field-full">
+            <label>অ্যাডমিন নোট</label>
+            <textarea name="admin_notes" v-model="edit.admin_notes" rows="3" class="form-control" placeholder="শুধুমাত্র অ্যাডমিন দেখবেন…"></textarea>
           </div>
-
         </div>
 
-        <div class="od-update-footer">
+        <div class="od-update-foot">
           <button type="submit" class="od-save-btn" :disabled="saving">
             <i class="fa fa-save"></i>
-            {{ saving ? 'সংরক্ষণ হচ্ছে…' : 'পরিবর্তন সংরক্ষণ করুন' }}
+            {{ saving ? "সংরক্ষণ হচ্ছে…" : "পরিবর্তন সংরক্ষণ করুন" }}
           </button>
         </div>
-
       </form>
-
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
-import { mapActions, mapWritableState } from 'pinia';
-import { store } from '../store';
-import setup from '../setup';
+import { mapActions, mapWritableState } from "pinia";
+import { store } from "../store";
+import setup from "../setup";
+import { site_settings_store } from "@/GlobalStore/site_settings_store.js";
 
 export default {
   data: () => ({
     setup,
     saving: false,
-    editData: {
-      order_status:   '',
-      payment_status: '',
-      delivery_date:  '',
-      admin_notes:    '',
-    },
+    siteName: "",
+    siteLogo: "",
+    edit: { order_status: "", payment_status: "", delivery_date: "", admin_notes: "" },
   }),
 
   created() {
-    this.get_data(this.$route.params.id);
+    this.loadData(this.$route.params.id);
+    this.loadSite();
   },
 
   methods: {
-    ...mapActions(store, { details: 'details', update: 'update' }),
+    ...mapActions(store, { details: "details", update: "update" }),
 
-    async get_data(slug) {
+    async loadData(slug) {
       this.item = {};
       await this.details(slug);
-      this.editData.order_status   = this.item.order_status   || 'pending';
-      this.editData.payment_status = this.item.payment_status || 'pending';
-      this.editData.delivery_date  = this.item.delivery_date  || '';
-      this.editData.admin_notes    = this.item.admin_notes    || '';
+      this.edit.order_status = this.item.order_status || "pending";
+      this.edit.payment_status = this.item.payment_status || "pending";
+      this.edit.delivery_date = this.item.delivery_date || "";
+      this.edit.admin_notes = this.item.admin_notes || "";
+    },
+
+    async loadSite() {
+      try {
+        const s = site_settings_store();
+        await s.get_all_website_settings();
+        const name = s.get_setting_value("site_name");
+        const logo = s.get_setting_value("image");
+        if (name) this.siteName = name;
+        if (logo) this.siteLogo = logo.startsWith("http") ? logo : "/" + logo.replace(/^\//, "");
+      } catch (_) {}
     },
 
     async submitUpdate() {
       this.saving = true;
-      const response = await this.update({ target: this.$refs.updateFormRef });
-      if ([200, 201].includes(response?.status)) {
-        window.s_alert('অর্ডার সফলভাবে আপডেট হয়েছে!', 'success');
-        await this.get_data(this.item.slug);
+      const res = await this.update({ target: this.$refs.formRef });
+      if ([200, 201].includes(res?.status)) {
+        window.s_alert("অর্ডার সফলভাবে আপডেট হয়েছে!", "success");
+        await this.loadData(this.item.slug);
       } else {
-        window.s_alert('আপডেট করা সম্ভব হয়নি।', 'error');
+        window.s_alert("আপডেট করা সম্ভব হয়নি।", "error");
       }
       this.saving = false;
     },
 
-    printInvoice() {
-      window.print();
+    async printInvoice() {
+      const el = document.getElementById("od-invoice");
+      if (!el) return;
+
+      // clone so we can swap logo src to absolute URL
+      const clone = el.cloneNode(true);
+      const logoImg = clone.querySelector(".od-bb-logo");
+      if (logoImg && this.siteLogo) {
+        const abs = this.siteLogo.startsWith("http")
+          ? this.siteLogo
+          : window.location.origin + (this.siteLogo.startsWith("/") ? "" : "/") + this.siteLogo;
+        try {
+          const res = await fetch(abs);
+          const blob = await res.blob();
+          const b64 = await new Promise((r) => {
+            const fr = new FileReader();
+            fr.onload = (e) => r(e.target.result);
+            fr.readAsDataURL(blob);
+          });
+          logoImg.src = b64;
+        } catch (_) {
+          logoImg.src = abs;
+        }
+      }
+
+      const html = `<!DOCTYPE html><html lang="bn"><head>
+        <meta charset="utf-8"/>
+        <title>Invoice #${this.item.order_number || ""}</title>
+        <style>
+          *{box-sizing:border-box;margin:0;padding:0}
+          body{font-family:"SolaimanLipi","Noto Sans Bengali",Arial,sans-serif;font-size:13px;color:#111;padding:28px 32px;background:#fff}
+
+          /* brand bar */
+          .od-brand-bar{display:flex;justify-content:space-between;align-items:center;padding-bottom:4px}
+          .od-bb-brand{display:flex;align-items:center;gap:10px}
+          .od-bb-logo{height:44px;width:auto;border-radius:8px;object-fit:contain}
+          .od-bb-icon{font-size:34px}
+          .od-bb-left{font-size:22px;font-weight:800;color:#1a1a2e;letter-spacing:.3px}
+          .od-bb-right{text-align:right}
+          .od-bb-invoice{font-size:22px;font-weight:800;color:#1a1a2e;letter-spacing:1px;line-height:1.1}
+          .od-bb-ordernum{font-size:13px;color:#6c757d;font-weight:600;margin-top:2px}
+
+          /* rule */
+          .od-inv-rule{border:none;border-top:1px solid #e0e0e0;margin:16px 0}
+
+          /* info grid */
+          .od-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:0}
+          .od-ship-section{display:flex;flex-direction:column;gap:4px}
+          .od-ship-title{font-weight:700;font-size:14px;color:#1a1a2e;margin-bottom:6px}
+          .od-ship-row{font-size:13px;color:#495057;line-height:1.7}
+          .od-ship-name{font-weight:700;color:#1a1a2e}
+          .od-order-meta{display:flex;flex-direction:column;gap:7px;align-items:flex-end;text-align:right;margin-left:auto}
+          .od-om-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;font-size:13px}
+          .od-om-label{font-weight:700;color:#1a1a2e;flex-shrink:0}
+          .od-om-val{color:#495057}
+
+          /* badges */
+          .od-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+          .od-badge--warning{background:#fff3cd;color:#856404}
+          .od-badge--success{background:#d1e7dd;color:#0a3622}
+          .od-badge--info{background:#cff4fc;color:#055160}
+          .od-badge--primary{background:#cfe2ff;color:#084298}
+          .od-badge--purple{background:#e9d8fd;color:#5a0080}
+          .od-badge--danger{background:#f8d7da;color:#842029}
+          .od-badge--secondary{background:#e2e3e5;color:#41464b}
+
+          /* items */
+          .od-section-label{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px}
+          .od-items-section{margin-bottom:20px}
+          .od-table{width:100%;border-collapse:collapse;font-size:13px}
+          .od-table thead tr{background:#1a1a2e}
+          .od-table th{padding:10px 12px;color:#fff;font-weight:600;text-align:left}
+          .od-table tbody tr{border-bottom:1px solid #f0f0f0;background:#fff}
+          .od-table td{padding:10px 12px;color:#1a1a2e;background:#fff}
+          .od-item-name{font-weight:600;color:#1a1a2e}
+          .od-item-variant{font-size:11px;color:#888;margin-top:2px}
+          .tc{text-align:center}.tr{text-align:right}
+
+          /* totals */
+          .od-totals-wrap{display:flex;justify-content:flex-end;margin-top:8px}
+          .od-totals{width:280px}
+          .od-total-line{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #f0f0f0;color:#444}
+          .od-discount-line{color:#198754}
+          .od-grand-line{font-size:16px;font-weight:800;color:#1a1a2e;border-top:2px solid #1a1a2e;border-bottom:none;padding-top:10px;margin-top:4px}
+        </style>
+      </head><body>${clone.innerHTML}</body></html>`;
+
+      const blob = new Blob([html], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, "_blank");
+      if (win)
+        win.onload = () => {
+          win.print();
+          URL.revokeObjectURL(url);
+        };
     },
 
-    formatDate(d) {
-      if (!d) return '—';
-      return new Date(d).toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+    fmtDate(d) {
+      if (!d) return "—";
+      return new Date(d).toLocaleDateString("bn-BD", { year: "numeric", month: "long", day: "numeric" });
     },
 
-    formatMoney(v) {
-      return Number(v || 0).toLocaleString('en-BD');
+    fmtMoney(v) {
+      return Number(v || 0).toLocaleString("en-BD");
     },
 
-    statusClass(s) {
-      const map = {
-        pending:    'od-badge--warning',
-        confirmed:  'od-badge--info',
-        processing: 'od-badge--primary',
-        shipped:    'od-badge--purple',
-        delivered:  'od-badge--success',
-        cancelled:  'od-badge--danger',
-        returned:   'od-badge--secondary',
-      };
-      return map[s] || 'od-badge--secondary';
+    orderStatusClass(s) {
+      return (
+        {
+          pending: "od-badge--warning",
+          confirmed: "od-badge--info",
+          processing: "od-badge--primary",
+          shipped: "od-badge--purple",
+          delivered: "od-badge--success",
+          cancelled: "od-badge--danger",
+          returned: "od-badge--secondary",
+        }[s] || "od-badge--secondary"
+      );
     },
 
-    statusLabel(s) {
-      const map = {
-        pending:    '⏳ Pending',
-        confirmed:  '✅ Confirmed',
-        processing: '⚙️ Processing',
-        shipped:    '🚚 Shipped',
-        delivered:  '📦 Delivered',
-        cancelled:  '❌ Cancelled',
-        returned:   '↩️ Returned',
-      };
-      return map[s] || s || '—';
+    orderStatusLabel(s) {
+      return (
+        {
+          pending: "⏳ Pending",
+          confirmed: "✅ Confirmed",
+          processing: "⚙️ Processing",
+          shipped: "🚚 Shipped",
+          delivered: "📦 Delivered",
+          cancelled: "❌ Cancelled",
+          returned: "↩️ Returned",
+        }[s] ||
+        s ||
+        "—"
+      );
     },
 
-    paymentClass(s) {
-      const map = {
-        pending:   'od-badge--warning',
-        completed: 'od-badge--success',
-        failed:    'od-badge--danger',
-        refunded:  'od-badge--info',
-      };
-      return map[s] || 'od-badge--secondary';
+    paymentStatusClass(s) {
+      return (
+        {
+          pending: "od-badge--warning",
+          completed: "od-badge--success",
+          failed: "od-badge--danger",
+          refunded: "od-badge--info",
+        }[s] || "od-badge--secondary"
+      );
     },
   },
 
   computed: {
-    ...mapWritableState(store, { item: 'item' }),
-
+    ...mapWritableState(store, { item: "item" }),
     orderItems() {
-      return this.item.order_items || this.item.items || [];
+      return this.item?.order_items || this.item?.items || [];
     },
   },
 };
 </script>
 
 <style scoped>
-/* ── Layout ── */
-.od-page { padding: 20px; max-width: 1100px; margin: 0 auto; }
+/* ── wrapper ── */
+.od-wrap {
+  padding: 20px;
+  max-width: 1120px;
+  margin: 0 auto;
+}
 
-/* ── Top Bar ── */
+/* ── top bar ── */
 .od-topbar {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
 }
-.od-back-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  color: #6c757d; text-decoration: none; font-size: 14px;
-  padding: 7px 14px; border: 1px solid #dee2e6; border-radius: 8px;
-  transition: all .2s;
+.od-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid #dee2e6;
+  color: #555;
+  text-decoration: none;
+  background: transparent;
+  transition: 0.2s;
 }
-.od-back-btn:hover { background: #f8f9fa; color: #333; }
+.od-btn-back:hover {
+  background: #f1f3f5;
+  color: #111;
+}
 .od-btn-print {
-  background: #0d6efd; color: #fff; border: none; cursor: pointer;
-  padding: 8px 18px; border-radius: 8px; font-size: 14px;
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: none;
+  background: #0d6efd;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.od-btn-print:hover { background: #0b5ed7; }
-
-/* ── Loading ── */
-.od-loading { text-align: center; padding: 60px 0; color: #6c757d; }
-
-/* ── Invoice ── */
-.od-invoice {
-  background: #fff; border: 1px solid #e9ecef; border-radius: 12px;
-  padding: 32px 36px; margin-bottom: 24px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+.od-btn-print:hover {
+  background: #0b5ed7;
 }
-.od-inv-head {
-  display: flex; justify-content: space-between; align-items: flex-start;
+
+/* ── loading ── */
+.od-loading {
+  text-align: center;
+  padding: 60px 0;
+  color: #6c757d;
+}
+
+/* ── invoice card ── */
+.od-invoice-card {
+  background: #fff;
+  border: 1px solid #e4e6ea;
+  border-radius: 14px;
+  padding: 32px 36px;
   margin-bottom: 24px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
-.od-inv-brand { display: flex; align-items: center; gap: 12px; }
-.od-inv-logo { font-size: 36px; }
-.od-inv-brand-name { font-size: 20px; font-weight: 700; color: #1a1a2e; }
-.od-inv-title { font-size: 26px; font-weight: 800; color: #1a1a2e; text-align: right; margin-bottom: 8px; }
-.od-inv-meta-row {
-  display: flex; justify-content: flex-end; gap: 10px; align-items: center;
-  font-size: 13px; margin-bottom: 4px;
-}
-.od-inv-meta-row span:first-child { color: #6c757d; }
-.od-divider { border-color: #e9ecef; margin: 0 0 24px; }
 
-/* ── Badges ── */
+/* ── brand bar ── */
+.od-brand-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 4px;
+}
+.od-bb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.od-bb-logo {
+  height: 44px;
+  width: auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+.od-bb-icon { font-size: 34px; }
+.od-bb-left {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a2e;
+  letter-spacing: .3px;
+}
+.od-bb-right {
+  text-align: right;
+}
+.od-bb-invoice {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1a2e;
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+.od-bb-ordernum {
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ── two-column info grid ── */
+.od-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 0;
+}
+
+/* shipping info */
+.od-ship-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.od-ship-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+}
+.od-ship-row {
+  font-size: 13px;
+  color: #495057;
+  line-height: 1.7;
+}
+.od-ship-name {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* order meta */
+.od-order-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+.od-om-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  font-size: 13px;
+}
+.od-om-label {
+  font-weight: 700;
+  color: #1a1a2e;
+  flex-shrink: 0;
+}
+.od-om-val {
+  color: #495057;
+}
+
+/* badges */
 .od-badge {
-  display: inline-block; padding: 3px 10px; border-radius: 20px;
-  font-size: 12px; font-weight: 600; white-space: nowrap;
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
-.od-badge--warning   { background: #fff3cd; color: #856404; }
-.od-badge--info      { background: #cff4fc; color: #055160; }
-.od-badge--primary   { background: #cfe2ff; color: #084298; }
-.od-badge--purple    { background: #e9d8fd; color: #5a0080; }
-.od-badge--success   { background: #d1e7dd; color: #0a3622; }
-.od-badge--danger    { background: #f8d7da; color: #842029; }
-.od-badge--secondary { background: #e2e3e5; color: #41464b; }
-
-/* ── Info Cards ── */
-.od-info-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px; }
-.od-info-card {
-  background: #f8f9fa; border-radius: 10px; padding: 16px 18px;
-  border: 1px solid #e9ecef;
+.od-badge--warning {
+  background: #fff3cd;
+  color: #856404;
 }
-.od-info-card-title {
-  font-size: 13px; font-weight: 700; color: #495057;
-  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+.od-badge--info {
+  background: #cff4fc;
+  color: #055160;
 }
-.od-info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.od-info-table td { padding: 4px 0; vertical-align: top; }
-.od-info-table td:first-child { color: #6c757d; width: 80px; padding-right: 8px; }
-.od-note-text { font-size: 13px; color: #495057; margin: 0; line-height: 1.6; }
-
-/* ── Items Table ── */
-.od-items-section { margin-bottom: 24px; }
-.od-section-title { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 12px; }
-.od-items-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.od-items-table thead tr { background: #1a1a2e; color: #fff; }
-.od-items-table th { padding: 10px 14px; font-weight: 600; }
-.od-items-table tbody tr { border-bottom: 1px solid #f0f0f0; }
-.od-items-table tbody tr:last-child { border-bottom: none; }
-.od-items-table td { padding: 12px 14px; }
-.od-item-name { font-weight: 600; color: #1a1a2e; }
-.od-item-variant { font-size: 12px; color: #6c757d; margin-top: 2px; }
-.text-center { text-align: center; }
-.text-right  { text-align: right; }
-
-/* ── Totals ── */
-.od-totals-wrap { display: flex; justify-content: flex-end; }
-.od-totals { width: 300px; }
-.od-total-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 7px 0; font-size: 14px; border-bottom: 1px solid #f0f0f0;
+.od-badge--primary {
+  background: #cfe2ff;
+  color: #084298;
 }
-.od-grand-total {
-  font-size: 17px; font-weight: 800; color: #1a1a2e;
-  border-top: 2px solid #1a1a2e; border-bottom: none; margin-top: 4px; padding-top: 10px;
+.od-badge--purple {
+  background: #e9d8fd;
+  color: #5a0080;
+}
+.od-badge--success {
+  background: #d1e7dd;
+  color: #0a3622;
+}
+.od-badge--danger {
+  background: #f8d7da;
+  color: #842029;
+}
+.od-badge--secondary {
+  background: #e2e3e5;
+  color: #41464b;
 }
 
-/* ── Update Card ── */
+/* horizontal rule */
+.od-inv-rule {
+  border: none;
+  border-top: 1px solid #e9ecef;
+  margin: 24px 0;
+}
+
+/* items table */
+.od-items-section {
+  margin-bottom: 20px;
+}
+.od-section-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 12px;
+}
+.od-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.od-table thead tr {
+  background: #1a1a2e;
+}
+.od-table thead th {
+  padding: 11px 14px;
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+}
+.od-table tbody tr {
+  border-bottom: 1px solid #f0f2f5;
+  background: #fff;
+}
+.od-table tbody tr:last-child {
+  border-bottom: none;
+}
+.od-table tbody tr:hover {
+  background: #f8f9fa;
+}
+.od-table td {
+  padding: 12px 14px;
+  color: #2c2c3e;
+  background: #fff;
+}
+.od-item-name {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.od-item-variant {
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 2px;
+}
+.od-empty-row {
+  color: #6c757d;
+  padding: 20px;
+}
+.tc {
+  text-align: center;
+}
+.tr {
+  text-align: right;
+}
+
+/* totals */
+.od-totals-wrap {
+  display: flex;
+  justify-content: flex-end;
+}
+.od-totals {
+  width: 300px;
+}
+.od-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f2f5;
+  color: #495057;
+}
+.od-discount-line {
+  color: #198754;
+}
+.od-grand-line {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1a1a2e;
+  border-top: 2px solid #1a1a2e;
+  border-bottom: none;
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+/* ── update card ── */
 .od-update-card {
-  background: #fff; border: 1px solid #e9ecef; border-radius: 12px;
-  overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  background: #fff;
+  border: 1px solid #e4e6ea;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
-.od-update-header {
-  background: #1a1a2e; color: #fff;
-  padding: 14px 24px; font-size: 15px; font-weight: 700;
-  display: flex; align-items: center; gap: 8px;
+.od-update-head {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 15px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.od-update-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px; padding: 24px;
+.od-update-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 24px;
 }
-.od-update-field { display: flex; flex-direction: column; gap: 6px; }
-.od-update-field--full { grid-column: 1 / -1; }
-.od-update-field label { font-size: 13px; font-weight: 600; color: #495057; }
-.od-update-footer {
-  padding: 16px 24px; border-top: 1px solid #e9ecef;
+.od-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.od-field-full {
+  grid-column: 1 / -1;
+}
+.od-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+}
+.od-update-foot {
+  padding: 16px 24px;
+  border-top: 1px solid #e4e6ea;
   background: #f8f9fa;
 }
 .od-save-btn {
-  background: #198754; color: #fff; border: none; cursor: pointer;
-  padding: 10px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
-  display: inline-flex; align-items: center; gap: 8px;
-  transition: background .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  background: #198754;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.od-save-btn:hover    { background: #157347; }
-.od-save-btn:disabled { background: #999; cursor: not-allowed; }
-
-/* ── Print ── */
-@media print {
-  .d-print-none { display: none !important; }
-  .od-page { padding: 0; }
-  .od-invoice { border: none; box-shadow: none; padding: 20px; }
-  .od-update-card { display: none; }
+.od-save-btn:hover {
+  background: #157347;
+}
+.od-save-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
 }
 
-/* ── Responsive ── */
+/* ── responsive ── */
 @media (max-width: 768px) {
-  .od-info-row { grid-template-columns: 1fr; }
-  .od-update-grid { grid-template-columns: 1fr; }
-  .od-invoice { padding: 20px 16px; }
-  .od-totals { width: 100%; }
+  .od-brand-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .od-bb-right {
+    text-align: left;
+  }
+  .od-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .od-update-body {
+    grid-template-columns: 1fr;
+  }
+  .od-invoice-card {
+    padding: 20px 16px;
+  }
+  .od-totals {
+    width: 100%;
+  }
+}
+
+/* ════════════════════════════════════
+   DARK THEME
+════════════════════════════════════ */
+
+/* page bg */
+:global(.dark-theme) .od-wrap {
+  color: #e8e8f0;
+}
+
+/* top bar */
+:global(.dark-theme) .od-btn-back {
+  border-color: #2e2e45;
+  color: #9090b8;
+  background: transparent;
+}
+:global(.dark-theme) .od-btn-back:hover {
+  background: #1e1e2e;
+  color: #e8e8f0;
+}
+
+/* invoice card */
+:global(.dark-theme) .od-invoice-card {
+  background: #1a1a2e;
+  border-color: #2e2e45;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* brand bar */
+:global(.dark-theme) .od-bb-left {
+  color: #e8e8f0;
+}
+:global(.dark-theme) .od-bb-invoice {
+  color: #e8e8f0;
+}
+:global(.dark-theme) .od-bb-ordernum {
+  color: #7878a0;
+}
+
+/* divider */
+:global(.dark-theme) .od-inv-rule {
+  border-top-color: #2e2e45;
+}
+
+/* shipping info — keep readable in dark */
+:global(.dark-theme) .od-ship-title {
+  color: #e8e8f0;
+}
+:global(.dark-theme) .od-ship-row {
+  color: #b0b0cc;
+}
+:global(.dark-theme) .od-ship-name {
+  color: #f0f0ff;
+}
+
+/* order meta */
+:global(.dark-theme) .od-om-label {
+  color: #e8e8f0;
+}
+:global(.dark-theme) .od-om-val {
+  color: #b0b0cc;
+}
+
+/* section label */
+:global(.dark-theme) .od-section-label {
+  color: #e8e8f0;
+}
+
+/* items table */
+:global(.dark-theme) .od-table thead tr {
+  background: #0e0e22;
+}
+:global(.dark-theme) .od-table thead th {
+  color: #c8c8e8;
+}
+:global(.dark-theme) .od-table tbody tr {
+  border-bottom-color: #e9ecef;
+  background: #fff !important;
+}
+:global(.dark-theme) .od-table tbody tr:hover {
+  background: #f8f9fa !important;
+}
+:global(.dark-theme) .od-table td {
+  color: #1a1a2e !important;
+  background: #fff !important;
+}
+:global(.dark-theme) .od-item-name {
+  color: #1a1a2e !important;
+}
+:global(.dark-theme) .od-item-variant {
+  color: #7878a0;
+}
+:global(.dark-theme) .od-empty-row {
+  color: #7878a0;
+}
+
+/* totals */
+:global(.dark-theme) .od-total-line {
+  border-bottom-color: #2a2a42;
+  color: #a8a8c8;
+}
+:global(.dark-theme) .od-discount-line {
+  color: #6fcf97;
+}
+:global(.dark-theme) .od-grand-line {
+  color: #f0f0ff;
+  border-top-color: #4a4a7a;
+}
+
+/* update card */
+:global(.dark-theme) .od-update-card {
+  background: #1a1a2e;
+  border-color: #2e2e45;
+}
+:global(.dark-theme) .od-update-head {
+  background: #0e0e22;
+}
+:global(.dark-theme) .od-update-body {
+  background: #1a1a2e;
+}
+:global(.dark-theme) .od-field label {
+  color: #9090b8;
+}
+:global(.dark-theme) .od-update-foot {
+  background: #12122a;
+  border-top-color: #2e2e45;
+}
+
+/* form controls — force override Bootstrap */
+:global(.dark-theme) .od-update-card .form-control,
+:global(.dark-theme) .od-update-card select,
+:global(.dark-theme) .od-update-card textarea,
+:global(.dark-theme) .od-update-card input[type="date"],
+:global(.dark-theme) .od-update-card input[type="text"] {
+  background-color: #12122a !important;
+  border-color: #2e2e45 !important;
+  color: #e8e8f0 !important;
+}
+:global(.dark-theme) .od-update-card .form-control:focus,
+:global(.dark-theme) .od-update-card select:focus,
+:global(.dark-theme) .od-update-card textarea:focus,
+:global(.dark-theme) .od-update-card input:focus {
+  border-color: #5a5ab0 !important;
+  box-shadow: 0 0 0 3px rgba(90, 90, 176, 0.25) !important;
+  outline: none;
+}
+:global(.dark-theme) .od-update-card select option {
+  background: #1a1a2e;
+  color: #e8e8f0;
+}
+:global(.dark-theme) .od-update-card input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="right-sidebar" :class="rightToggle ? 'right-toggled' : ''">
+  <div class="right-sidebar" style="display:none!important" :class="rightToggle ? 'right-toggled' : ''">
     <div class="switcher-icon d-none" @click="rightToggle = !rightToggle">
       <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
     </div>

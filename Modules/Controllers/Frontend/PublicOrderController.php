@@ -36,7 +36,10 @@ class PublicOrderController extends Controller
         ]);
 
         try {
+            $orderNumber = 'ORD-' . strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 8)) . '-' . date('ymd');
+
             $order = Order::create([
+                'order_number'     => $orderNumber,
                 'customer_name'    => $validated['customer_name'],
                 'customer_phone'   => $validated['customer_phone'],
                 'customer_email'   => $validated['customer_email'] ?? null,
@@ -73,7 +76,7 @@ class PublicOrderController extends Controller
             return response()->json([
                 'status'       => 'success',
                 'message'      => 'অর্ডার সফলভাবে দেওয়া হয়েছে!',
-                'order_number' => $order->slug,
+                'order_number' => $order->order_number,
             ], 201);
 
         } catch (\Exception $e) {

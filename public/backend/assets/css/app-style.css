@@ -6567,3 +6567,30 @@ table.grid td {
 .card-body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
+
+/* ── hide right color-switcher sidebar & its toggle icon ── */
+.right-sidebar,
+.switcher-icon {
+    display: none !important;
+    width: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+}
+
+/* ── fix horizontal scrollbar & cream background bleed ── */
+html,
+body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+#wrapper {
+    overflow-x: hidden !important;
+    min-height: 100vh;
+    width: 100% !important;
+    max-width: 100vw !important;
+}
+.content-wrapper {
+    overflow-x: hidden !important;
+    min-height: 100vh;
+    max-width: 100% !important;
+}

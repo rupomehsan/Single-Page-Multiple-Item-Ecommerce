@@ -218,6 +218,64 @@
                                             </div>
                                         </div>
 
+                                        <!-- Business Hours -->
+                                        <div class="form-group row">
+                                            <label
+                                                class="col-lg-3 col-form-label form-control-label"
+                                                >Business Hours</label
+                                            >
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="business_hours"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="সকাল ১০টা – রাত ১০টা · প্রতিদিন খোলা"
+                                                    :value="`${get_setting_value(
+                                                        'business_hours'
+                                                    )}`"
+                                                />
+                                                <small class="text-muted">Opening &amp; closing time shown on the website</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Short Description -->
+                                        <div class="form-group row">
+                                            <label
+                                                class="col-lg-3 col-form-label form-control-label"
+                                                >Short Description</label
+                                            >
+                                            <div class="col-lg-9">
+                                                <textarea
+                                                    name="short_description"
+                                                    class="form-control"
+                                                    rows="3"
+                                                    placeholder="Brief description of your business (2–3 sentences)"
+                                                    :value="`${get_setting_value(
+                                                        'short_description'
+                                                    )}`"
+                                                ></textarea>
+                                            </div>
+                                        </div>
+
+                                        <!-- Slogan -->
+                                        <div class="form-group row">
+                                            <label
+                                                class="col-lg-3 col-form-label form-control-label"
+                                                >Slogan / Tagline</label
+                                            >
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="slogan"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="e.g. গরম খাবার, দ্রুত ডেলিভারি!"
+                                                    :value="`${get_setting_value(
+                                                        'slogan'
+                                                    )}`"
+                                                />
+                                            </div>
+                                        </div>
+
                                         <div class="form-group row">
                                             <label
                                                 class="col-lg-3 col-form-label form-control-label"
@@ -368,101 +426,193 @@
                                     id="social_link"
                                 >
                                     <form @submit.prevent="SiteSettingsHandler">
+
+                                        <!-- ── Messaging Platforms ── -->
+                                        <h6 class="text-muted mb-3 mt-1 font-weight-bold text-uppercase" style="font-size:11px;letter-spacing:1px;">Messaging</h6>
+
+                                        <!-- WhatsApp -->
+                                        <div class="form-group row">
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                <i class="fa" style="color:#25D366;">📱</i> WhatsApp
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="whatsapp_number"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="01XXXXXXXXX  (number only, no +880)"
+                                                    :value="`${get_setting_value('whatsapp_number')}`"
+                                                />
+                                                <small class="text-muted">Used to build wa.me link automatically</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Facebook Messenger -->
+                                        <div class="form-group row">
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                💬 Messenger
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="messenger_url"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="https://m.me/yourpagename"
+                                                    :value="`${get_setting_value('messenger_url')}`"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <!-- Telegram -->
+                                        <div class="form-group row">
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                ✈️ Telegram
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="telegram"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="https://t.me/yourusername"
+                                                    :value="`${get_setting_value('telegram')}`"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <!-- ── Social Networks ── -->
+                                        <h6 class="text-muted mb-3 mt-4 font-weight-bold text-uppercase" style="font-size:11px;letter-spacing:1px;">Social Networks</h6>
+
                                         <!-- Facebook -->
                                         <div class="form-group row">
-                                            <label
-                                                class="col-lg-3 col-form-label form-control-label"
-                                                >Facebook</label
-                                            >
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                📘 Facebook
+                                            </label>
                                             <div class="col-lg-9">
                                                 <input
                                                     name="facebook"
                                                     class="form-control"
                                                     type="text"
                                                     placeholder="https://facebook.com/yourpage"
-                                                    :value="`${get_setting_value(
-                                                        'facebook'
-                                                    )}`"
+                                                    :value="`${get_setting_value('facebook')}`"
                                                 />
                                             </div>
                                         </div>
-                                        <!-- Twitter -->
-                                        <div class="form-group row">
-                                            <label
-                                                class="col-lg-3 col-form-label form-control-label"
-                                                >Twitter</label
-                                            >
-                                            <div class="col-lg-9">
-                                                <input
-                                                    name="twitter"
-                                                    class="form-control"
-                                                    type="text"
-                                                    placeholder="https://twitter.com/yourprofile"
-                                                    :value="`${get_setting_value(
-                                                        'twitter'
-                                                    )}`"
-                                                />
-                                            </div>
-                                        </div>
+
                                         <!-- Instagram -->
                                         <div class="form-group row">
-                                            <label
-                                                class="col-lg-3 col-form-label form-control-label"
-                                                >Instagram</label
-                                            >
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                📸 Instagram
+                                            </label>
                                             <div class="col-lg-9">
                                                 <input
                                                     name="instagram"
                                                     class="form-control"
                                                     type="text"
                                                     placeholder="https://instagram.com/yourprofile"
-                                                    :value="`${get_setting_value(
-                                                        'instagram'
-                                                    )}`"
+                                                    :value="`${get_setting_value('instagram')}`"
                                                 />
                                             </div>
                                         </div>
-                                        <!-- LinkedIn -->
+
+                                        <!-- TikTok -->
                                         <div class="form-group row">
-                                            <label
-                                                class="col-lg-3 col-form-label form-control-label"
-                                                >LinkedIn</label
-                                            >
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                🎵 TikTok
+                                            </label>
                                             <div class="col-lg-9">
                                                 <input
-                                                    name="linkedin"
+                                                    name="tiktok"
                                                     class="form-control"
                                                     type="text"
-                                                    placeholder="https://linkedin.com/in/yourprofile"
-                                                    :value="`${get_setting_value(
-                                                        'linkedin'
-                                                    )}`"
+                                                    placeholder="https://tiktok.com/@yourusername"
+                                                    :value="`${get_setting_value('tiktok')}`"
                                                 />
                                             </div>
                                         </div>
+
                                         <!-- YouTube -->
                                         <div class="form-group row">
-                                            <label
-                                                class="col-lg-3 col-form-label form-control-label"
-                                                >YouTube</label
-                                            >
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                ▶️ YouTube
+                                            </label>
                                             <div class="col-lg-9">
                                                 <input
                                                     name="youtube"
                                                     class="form-control"
                                                     type="text"
                                                     placeholder="https://youtube.com/yourchannel"
-                                                    :value="`${get_setting_value(
-                                                        'youtube'
-                                                    )}`"
+                                                    :value="`${get_setting_value('youtube')}`"
                                                 />
                                             </div>
                                         </div>
-                                        <!-- Save Button -->
+
+                                        <!-- Twitter / X -->
                                         <div class="form-group row">
-                                            <label
-                                                class="col-lg-3 col-form-label form-control-label"
-                                            ></label>
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                🐦 Twitter / X
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="twitter"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="https://x.com/yourprofile"
+                                                    :value="`${get_setting_value('twitter')}`"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <!-- LinkedIn -->
+                                        <div class="form-group row">
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                💼 LinkedIn
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="linkedin"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="https://linkedin.com/in/yourprofile"
+                                                    :value="`${get_setting_value('linkedin')}`"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <!-- Pinterest -->
+                                        <div class="form-group row">
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                📌 Pinterest
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="pinterest"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="https://pinterest.com/yourprofile"
+                                                    :value="`${get_setting_value('pinterest')}`"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <!-- Snapchat -->
+                                        <div class="form-group row">
+                                            <label class="col-lg-3 col-form-label form-control-label">
+                                                👻 Snapchat
+                                            </label>
+                                            <div class="col-lg-9">
+                                                <input
+                                                    name="snapchat"
+                                                    class="form-control"
+                                                    type="text"
+                                                    placeholder="https://snapchat.com/add/yourusername"
+                                                    :value="`${get_setting_value('snapchat')}`"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <!-- Save Button -->
+                                        <div class="form-group row mt-4">
+                                            <label class="col-lg-3 col-form-label form-control-label"></label>
                                             <div class="col-lg-9">
                                                 <input
                                                     type="submit"

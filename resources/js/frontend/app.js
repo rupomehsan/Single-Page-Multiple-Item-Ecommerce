@@ -29,5 +29,5 @@ createInertiaApp({
         app.mount(el);
     },
 
-    title: (title) => `My Portfolio : ${title}`,
+    title: (title) => title,
 });

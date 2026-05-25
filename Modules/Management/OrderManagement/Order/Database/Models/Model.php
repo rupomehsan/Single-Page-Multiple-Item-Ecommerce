@@ -41,4 +41,9 @@ class Model extends EloquentModel
         return $q->where('status', 'inactive');
     }
 
+    public function order_items()
+    {
+        return $this->hasMany(OrderItemModel::class, 'order_id');
+    }
+
 }

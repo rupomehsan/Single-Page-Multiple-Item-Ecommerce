@@ -1,13 +1,10 @@
-import { defineStore } from "pinia";
-import { initialState } from "./initial_state.ts";
-import { actions } from "./actions";
+import { defineStore } from 'pinia';
+import { initialState } from './initial_state';
+import { getters }      from './getters';
+import { actions }      from './actions';
 
-export const store = defineStore("home_page_store", {
+export const useHomePageStore = defineStore('home_page', {
     state: () => ({ ...initialState }),
-    getters: {},
-    actions: {
-        ...actions
-    },
+    getters: { ...getters },
+    actions: { ...actions },
 });
-
-

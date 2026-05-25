@@ -26,13 +26,7 @@ import { auth_store } from "../GlobalStore/auth_store";
 // roters
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: [
-    {
-      path: "/",
-      component: App,
-      children: [Routes],
-    },
-  ],
+  routes: [Routes],
 });
 // previous route store
 // previous route store

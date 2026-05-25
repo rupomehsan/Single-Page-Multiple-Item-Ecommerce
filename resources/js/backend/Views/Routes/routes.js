@@ -24,7 +24,7 @@ import ProductCategoryRoutes from '../Management/ProductManagement/ProductCatego
 
 
 const routes = {
-  path: "",
+  path: "/",
   component: Layout,
   children: [
     {

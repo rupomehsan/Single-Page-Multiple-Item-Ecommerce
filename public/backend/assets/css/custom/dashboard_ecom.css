@@ -31,9 +31,7 @@ label {
     }
 }
 
-.content-wrapper {
-    padding-top: 80px;
-}
+/* padding-top handled by fixed positioning in app-style.css */
 
 .widgets-icons {
     width: 50px;

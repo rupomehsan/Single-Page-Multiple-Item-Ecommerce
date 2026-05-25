@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="d-flex align-items-center gap-1">
+  <div class="index-footer-actions d-flex align-items-center gap-2" style="flex-wrap: wrap; gap: 8px !important;">
     <create />
     <export-all />
     <export-selected />

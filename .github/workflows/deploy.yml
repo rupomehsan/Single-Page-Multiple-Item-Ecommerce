@@ -1,52 +1,52 @@
-name: Deploy to cPanel
+# name: Deploy to cPanel
 
-on:
-  push:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main ]
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, bcmath, fileinfo, gd, xml, zip, pdo, pdo_mysql
+#       - name: Setup PHP 8.2
+#         uses: shivammathur/setup-php@v2
+#         with:
+#           php-version: '8.2'
+#           extensions: mbstring, bcmath, fileinfo, gd, xml, zip, pdo, pdo_mysql
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: '20'
+#           cache: 'npm'
 
-      - name: Install NPM dependencies & Build
-        run: |
-          npm ci
-          npm run build
+#       - name: Install NPM dependencies & Build
+#         run: |
+#           npm ci
+#           npm run build
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /home/amadersh/foodcard.amadershwapnopuron.com/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/vendor/**
-            **/tests/**
-            **/.deploy_tools/**
-            .env
-            .env.backup
-            .env.production
-            *.md
-            *.txt
-            phpunit.xml
+#       - name: Deploy via FTP
+#         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#         with:
+#           server: ${{ secrets.FTP_SERVER }}
+#           username: ${{ secrets.FTP_USERNAME }}
+#           password: ${{ secrets.FTP_PASSWORD }}
+#           local-dir: ./
+#           server-dir: /home/amadersh/foodcard.amadershwapnopuron.com/
+#           exclude: |
+#             **/.git*
+#             **/.git*/**
+#             **/node_modules/**
+#             **/vendor/**
+#             **/tests/**
+#             **/.deploy_tools/**
+#             .env
+#             .env.backup
+#             .env.production
+#             *.md
+#             *.txt
+#             phpunit.xml

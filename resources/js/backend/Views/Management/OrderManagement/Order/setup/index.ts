@@ -42,6 +42,7 @@ const setup: setup_type = {
   // Field Selection for API requests
   select_fields: [
     "id",
+    "slug",
     "order_number",
     "customer_name",
     "customer_phone",

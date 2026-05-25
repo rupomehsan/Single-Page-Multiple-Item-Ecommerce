@@ -13,15 +13,19 @@
     "deploy:project": "bash .deploy_tools/deploy_to_vps.sh",
     "deploy:files": "bash .deploy_tools/deploy_to_vps_via_file_tracking.sh",
     "deploy:fix-404": "ssh -i $HOME/.ssh/id_rsa root@161.248.201.157 'cd /www/wwwroot/mydictionary.techparkit.info && bash .deploy_tools/fix_404.sh'",
-    "deploy:fix-permissions": "ssh -i $HOME/.ssh/id_rsa root@161.248.201.157 'cd /www/wwwroot/mydictionary.techparkit.info && chown -R www:www . && chmod -R 755 . && chmod -R 775 storage bootstrap/cache && echo \"✅ Permissions fixed!\"'"
+    "deploy:fix-permissions": "ssh -i $HOME/.ssh/id_rsa root@161.248.201.157 'cd /www/wwwroot/mydictionary.techparkit.info && chown -R www:www . && chmod -R 755 . && chmod -R 775 storage bootstrap/cache && echo \"✅ Permissions fixed!\"'",
+    "deploy:cpanel": "node .deploy_tools/deploy_to_cpanel.js",
+    "deploy:cpanel:full": "node .deploy_tools/deploy_full_to_cpanel.js"
   },
   "devDependencies": {
     "@popperjs/core": "^2.11.6",
     "@vitejs/plugin-vue": "^4.0.0",
+    "archiver": "^8.0.0",
     "axios": "^1.7.2",
     "bootstrap": "^5.2.3",
     "laravel-vite-plugin": "^0.8.0",
     "sass": "^1.56.1",
+    "ssh2-sftp-client": "^12.1.1",
     "vite": "^4.5.5",
     "vue": "^3.2.37"
   },

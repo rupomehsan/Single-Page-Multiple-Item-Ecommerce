@@ -1,15 +1,8 @@
 <template>
   <div id="wrapper" v-if="is_auth">
     <top-header></top-header>
-    <div class="clearfix"></div>
-    <div class="content-wrapper">
-      <router-view></router-view>
-    </div>
-    <!--End content-wrapper-->
-
-    <!--start color switcher-->
+    <router-view></router-view>
     <Footer></Footer>
-    <!--end color switcher-->
   </div>
 </template>
 

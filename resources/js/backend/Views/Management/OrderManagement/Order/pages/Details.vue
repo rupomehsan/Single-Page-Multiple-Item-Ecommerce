@@ -766,24 +766,87 @@ export default {
 
 /* ── responsive ── */
 @media (max-width: 768px) {
-  .od-brand-bar {
-    grid-template-columns: 1fr;
+  /* wrapper */
+  .od-wrap {
+    padding: 10px;
+  }
+
+  /* top bar */
+  .od-topbar {
+    flex-wrap: wrap;
     gap: 8px;
+  }
+  .od-btn-back,
+  .od-btn-print {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+
+  /* invoice card */
+  .od-invoice-card {
+    padding: 16px 14px;
+  }
+
+  /* brand bar: stack vertically (it's flex, not grid) */
+  .od-brand-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   .od-bb-right {
     text-align: left;
   }
+  .od-bb-left {
+    font-size: 17px;
+  }
+  .od-bb-invoice {
+    font-size: 17px;
+  }
+
+  /* info grid: single column */
   .od-info-grid {
     grid-template-columns: 1fr;
   }
-  .od-update-body {
-    grid-template-columns: 1fr;
+
+  /* order meta: left-align on mobile */
+  .od-order-meta {
+    align-items: flex-start;
+    text-align: left;
+    margin-left: 0;
   }
-  .od-invoice-card {
-    padding: 20px 16px;
+  .od-om-row {
+    justify-content: flex-start;
   }
+
+  /* items table: horizontal scroll */
+  .od-items-section {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .od-table {
+    min-width: 420px;
+  }
+
+  /* totals: full width */
   .od-totals {
     width: 100%;
+  }
+
+  /* update card */
+  .od-update-head {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  .od-update-body {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .od-update-foot {
+    padding: 12px 16px;
+  }
+  .od-save-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 

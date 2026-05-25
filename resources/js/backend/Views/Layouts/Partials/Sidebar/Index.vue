@@ -81,6 +81,8 @@
         ]"
       />
 
+      
+
         <!-- CMS Management -->
       <side-bar-drop-down-menus
         :icon="`zmdi zmdi-layers`"
@@ -212,6 +214,12 @@ export default {
   data: () => ({
     search_query: "",
   }),
+  created() {
+    const authS = auth_store();
+    if (!authS.is_auth) {
+      authS.check_is_auth();
+    }
+  },
   methods: {
     ...mapActions(site_settings_store, {
       get_setting_value: "get_setting_value",
@@ -224,7 +232,12 @@ export default {
       }
     },
     toggle_menu: function () {
-      document.getElementById("wrapper").classList.toggle("toggled");
+      const wrapper = document.getElementById("wrapper");
+      wrapper.classList.toggle("toggled");
+      if (window.innerWidth <= 991) {
+        const isOpen = wrapper.classList.contains("toggled");
+        document.body.classList.toggle("sidebar-open", isOpen);
+      }
     },
     hide_menu: function () {
       document.getElementById("wrapper").classList.add("toggled");
@@ -239,8 +252,9 @@ export default {
   },
   watch: {
     $route(to, from) {
-      if (to.name === "TaskBoard") {
-        this.hide_menu();
+      if (window.innerWidth <= 991) {
+        document.getElementById("wrapper")?.classList.remove("toggled");
+        document.body.classList.remove("sidebar-open");
       }
     },
   },
@@ -251,10 +265,17 @@ export default {
       has_permission: "has_permission",
     }),
     user_display_name() {
-      return this.auth_info?.name ? `Mr. ${this.auth_info.name}` : "Guest";
+      const name = this.auth_info?.name;
+      return name ? `Mr. ${name}` : "Guest";
     },
     user_role_name() {
-      return this.role?.name || this.role?.title || "Member";
+      return (
+        this.role?.name ||
+        this.role?.title ||
+        this.auth_info?.role?.name ||
+        this.auth_info?.role?.title ||
+        "Member"
+      );
     },
     no_menu_results() {
       if (!this.search_query) return false;
@@ -553,5 +574,11 @@ export default {
 }
 :global(body.light-theme) .sidebar-empty-search span {
   color: #64748b;
+}
+
+@media (max-width: 991px) {
+  .sidebar-user-card {
+    margin: 0.5rem 0.85rem 0;
+  }
 }
 </style>

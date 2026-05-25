@@ -100,11 +100,10 @@ export default {
         this.form_fields.forEach((field, index) => {
           Object.entries(this.item).forEach((value) => {
             if (field.name == value[0]) {
-              // Convert value to string for select fields to match data_list values
               if (field.type === 'select' && value[1] !== null && value[1] !== undefined) {
-                this.$set(this.form_fields[index], 'value', String(value[1]));
+                this.form_fields[index].value = String(value[1]);
               } else {
-                this.$set(this.form_fields[index], 'value', value[1]);
+                this.form_fields[index].value = value[1];
               }
             }
 

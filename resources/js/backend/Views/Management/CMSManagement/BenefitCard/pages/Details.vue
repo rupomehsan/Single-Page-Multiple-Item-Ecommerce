@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div>
         <form @submit.prevent="submitHandler">
             <div class="card">
@@ -18,6 +18,7 @@
                 <div class="card-body card_body_fixed_height">
                     <div class="row">
                         <div class="col-lg-8">
+                            <div class="quick_modal_table-wrap">
                             <table
                                 class="table quick_modal_table table-bordered"
                             >
@@ -25,6 +26,7 @@
                                     <data-detials-table-body :item="item" />
                                 </tbody>
                             </table>
+                            </div>
                         </div>
                     </div>
                 </div>

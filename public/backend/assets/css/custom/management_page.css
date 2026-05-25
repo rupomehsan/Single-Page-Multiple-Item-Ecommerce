@@ -3,6 +3,54 @@
     max-width: 400px;
 }
 
+/* ── Details page: quick_modal_table responsive ──────────────────────── */
+.quick_modal_table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.quick_modal_table {
+    min-width: 400px;
+}
+
+/* ── Card header: gap between title / search / buttons ───────────────── */
+.card-header .row {
+    row-gap: 10px;
+}
+
+/* ── Index page responsive (mobile) ─────────────────────────────────── */
+@media (max-width: 767px) {
+
+    /* Buttons row: left-align on mobile */
+    .card-header .row > div:last-child {
+        text-align: left !important;
+    }
+
+    /* Pagination nav: wrap on mobile */
+    .index-pagination-wrap {
+        flex-wrap: wrap;
+        gap: 6px !important;
+        padding: 6px 0;
+    }
+    .index-pagination-wrap .pagination {
+        margin-bottom: 0 !important;
+    }
+
+    /* Footer action buttons: wrap on mobile */
+    .index-footer-actions {
+        flex-wrap: wrap;
+        gap: 6px !important;
+    }
+    .index-footer-actions .btn,
+    .index-footer-actions a.btn {
+        flex: 0 0 auto;
+    }
+
+    /* Card footer padding reduction */
+    .card-footer {
+        padding: 10px 12px !important;
+    }
+}
+
 .action_btn{
     line-height: 10px;
     transition: all 0.3s ease;

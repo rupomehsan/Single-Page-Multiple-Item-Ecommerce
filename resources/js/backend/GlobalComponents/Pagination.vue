@@ -1,6 +1,6 @@
 <template>
-  <nav aria-label="" class="d-flex gap-2 align-items-center" style="gap: 10px">
-    <ul class="pagination my-2" style="font-size: 11px">
+  <nav aria-label="" class="index-pagination-wrap d-flex align-items-center" style="gap: 10px; flex-wrap: wrap;">
+    <ul class="pagination my-2" style="font-size: 11px; margin-bottom: 0;">
       <template v-for="(link, index) in data.links" :key="index">
         <li class="page-item" :class="{ active: link.active }">
           <a class="page-link"
@@ -10,18 +10,16 @@
         </li>
       </template>
     </ul>
-    <div class="d-flex" style="gap: 5px">
-      <span></span>
+    <div class="d-flex align-items-center" style="gap: 4px; font-size: 12px; white-space: nowrap;">
       <span>{{ data.from }}</span>
       <span>-</span>
       <span>{{ data.to }}</span>
       <span>of</span>
       <span>{{ data.total }}</span>
     </div>
-    <div class="d-flex" style="gap: 5px">
-      <span></span>
-      <span> Limit </span>
-      <select @change="set_per_page_limit" class="bg-transparent text-white rounded-1">
+    <div class="d-flex align-items-center" style="gap: 5px; font-size: 12px; white-space: nowrap;">
+      <span>Limit</span>
+      <select @change="set_per_page_limit" class="pagination-limit-select rounded-1">
         <option value="5">5</option>
         <option value="10">10</option>
         <option value="15">15</option>
@@ -59,4 +57,22 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.pagination-limit-select {
+    background: transparent;
+    color: inherit;
+    border: 1px solid var(--border-color, #dee2e6);
+    padding: 2px 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .index-pagination-wrap {
+        padding: 4px 0;
+    }
+    .pagination-limit-select {
+        padding: 3px 6px;
+    }
+}
+</style>

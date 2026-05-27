@@ -51,7 +51,7 @@ header {
   white-space: nowrap;
 }
 .logo .dot { color: var(--red); }
-.logo-img { height: 36px; width: auto; object-fit: contain; border-radius: 6px; }
+.logo-img { height: 50px; width: auto; object-fit: contain; border-radius: 6px; }
 
 /* ── BOTTOM NAV ── */
 .bottom-nav {
